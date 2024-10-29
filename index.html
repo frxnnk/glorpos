@@ -1,0 +1,1558 @@
+<html><head><base href="https://glorpcat.lol">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlorpCat OS</title>
+<style>
+:root {
+  --primary: #ff69b4; /* Primary color matching the glorp aesthetic */
+  --secondary: #ffbd44; /* Secondary color */
+  --dark: #2f2f2f; /* Dark shade for readability */
+  --light: #ffffff; /* Light shade for contrast */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Tahoma', sans-serif;
+  background: url('https://www.glorpcat.lol/glorp.png') center/cover no-repeat; /* Image background */
+  height: 100vh;
+  overflow: hidden; /* Prevent scrolling */
+}
+
+.desktop {
+  height: calc(100vh - 60px); /* Changed from 40px to 60px */
+  position: relative;
+  padding: 10px;
+  backdrop-filter: blur(10px);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 15px;
+  align-items: start;
+  justify-items: center;
+}
+
+.desktop-icon {
+  width: 80px;
+  text-align: center;
+  color: var(--light);
+  cursor: pointer;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  background: none;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.icon-img {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 5px;
+}
+
+.window {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--dark);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  position: absolute;
+  min-width: 200px;
+  min-height: 150px;
+  max-width: 90vw; /* Responsive maximum width */
+  max-height: 90vh; /* Responsive maximum height */
+  overflow: hidden; /* Change from auto to hidden */
+  transition: all 0.3s ease, height 0.3s ease, width 0.3s ease; /* Add separate transitions for height and width */
+  animation: windowAppear 0.3s ease-out;
+}
+
+.window.minimized {
+  display: none; /* Hides the window from the desktop */
+}
+
+.window.moving {
+  opacity: 0.8;
+  transform: scale(1.02);
+}
+
+.window.fullscreen {
+  width: 100vw !important;
+  height: calc(100vh - 60px) !important; /* Subtract taskbar height */
+  top: 0 !important;
+  left: 0 !important;
+  resize: none;
+  z-index: 10000; /* Ensure it is on top */
+  animation: windowFullscreen 0.3s ease-out;
+}
+
+@keyframes windowFullscreen {
+  from {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.window-header {
+  background: linear-gradient(to bottom, var(--primary), var(--secondary));
+  color: white;
+  padding: 5px; /* Reducido de 10px a 5px para una barra más fina */
+  display: flex;
+  justify-content: space-between; /* Space between title and controls */
+  align-items: center;
+  border-radius: 8px 8px 0 0;
+  cursor: move;
+  user-select: none;
+  font-size: 14px; /* Opcional: Ajusta el tamaño de la fuente si es necesario */
+}
+
+.window-header.terminal-header {
+  padding: 5px 10px; /* Ajustar el padding para una mejor visualización */
+  font-size: 14px;    /* Asegurar un tamaño de fuente adecuado */
+}
+
+.window-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.window-control {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.2);
+  transition: background 0.2s, transform 0.2s;
+  padding: 0;
+}
+
+.window-control:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.window-control svg {
+  width: 16px;
+  height: 16px;
+  color: white;
+}
+
+.window-control.minimize {
+  background: var(--secondary);
+}
+
+.window-control.close {
+  background: #ff4444;
+}
+
+.window-control.maximize {
+  background: var(--secondary);
+  margin-right: 5px;
+}
+
+.window iframe {
+  width: 100%;
+  height: calc(100% - 40px); /* Adjust for header */
+  border: none;
+  overflow: hidden; /* Hide iframe scrollbars */
+}
+
+.taskbar {
+  height: 60px;
+  background: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  justify-content: space-between;
+}
+
+.taskbar-open-programs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  overflow-x: auto;
+  padding: 0 10px;
+  height: 40px;
+}
+
+.taskbar-open-programs .open-program-item {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 5px 10px;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.2s;
+}
+
+.taskbar-open-programs .open-program-item:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.start-button {
+  background: var(--primary);
+  color: white;
+  padding: 5px 15px;
+  border-radius: 3px;
+  margin-right: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.start-button img {
+  width: 24px;
+  height: 24px;
+}
+
+.taskbar-items {
+  display: none; /* Hide when collapsed in mobile */
+  gap: 5px;
+  flex: 1;
+  margin: 0 10px;
+}
+
+.taskbar-item {
+  background: rgba(255,255,255,0.2);
+  padding: 8px 15px;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.taskbar-item:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.taskbar-item.active {
+  background: var(--primary);
+}
+
+.system-tray {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-size: 14px;
+  background: rgba(255,255,255,0.1);
+  padding: 5px 10px;
+  border-radius: 3px;
+  margin-right: 20px;  /* Move clock left */
+}
+
+#clock {
+  font-family: 'Consolas', monospace;
+  font-weight: bold;
+}
+
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 40px);
+  background: #f5f5f5;
+  border: 1px solid var(--dark);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  background: #ffffff;
+  overflow-y: auto;
+}
+
+.message {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.message.sent {
+  justify-content: flex-end;
+}
+
+.message.received {
+  justify-content: flex-start;
+}
+
+.message .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.message.sent .avatar {
+  background: var(--secondary);
+  margin-left: 10px;
+  margin-right: 0;
+}
+
+.message .content {
+  max-width: 70%;
+  background: #e0e0e0;
+  padding: 10px 15px;
+  border-radius: 18px;
+  position: relative;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.message.sent .content {
+  background: var(--primary);
+  color: white;
+}
+
+.message .timestamp {
+  font-size: 12px;
+  color: #999;
+  margin-top: 5px;
+  text-align: right;
+}
+
+.chat-input {
+  display: flex;
+  padding: 10px 15px;
+  background: #ffffff;
+  border-top: 1px solid #ddd;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  outline: none;
+  font-size: 16px;
+  background: #f0f0f0;
+}
+
+.chat-input button {
+  margin-left: 10px;
+  padding: 10px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.chat-input button:hover {
+  background: var(--secondary);
+}
+
+.lock-screen, .power-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.95);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lock-content, .power-content {
+  text-align: center;
+  color: white;
+}
+
+.lock-logo {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 20px;
+}
+
+.lock-input {
+  padding: 10px;
+  border-radius: 4px;
+  border: none;
+  margin: 10px 0;
+}
+
+.unlock-button, .power-button {
+  padding: 10px 20px;
+  background: var(--primary);
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}
+
+.power-text {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.boot-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: opacity 0.5s;
+}
+
+.boot-logo {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 20px;
+  animation: pulse 2s infinite;
+}
+
+.boot-progress {
+  width: 200px;
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.boot-progress-bar {
+  width: 0%;
+  height: 100%;
+  background: var(--primary);
+  animation: progress 3s ease-out forwards;
+}
+
+#boot-messages {
+  color: #33ff33;
+  font-family: 'Consolas', monospace;
+  margin: 20px 0;
+  text-align: center;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.5; }
+}
+
+@keyframes progress {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+@keyframes windowAppear {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.settings-window {
+  padding: 20px;
+  height: calc(100% - 40px);
+  overflow-y: auto;
+}
+
+.color-themes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.theme-option {
+  text-align: center;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.theme-option:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.theme-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  margin: 0 auto 10px;
+  border: 2px solid #ddd;
+}
+
+.terminal {
+  background: #1e1e1e;
+  color: #33ff33;
+  font-family: 'Consolas', monospace;
+  padding: 10px;
+  height: calc(100% - 20px); /* Ajuste para mejor visualización */
+  display: flex;
+  flex-direction: column;
+  font-size: 16px; /* Aumentado para mejor legibilidad */
+}
+
+.terminal-output {
+  flex: 1;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  padding: 10px; /* Aumentado para mejor espacio */
+  font-size: 16px; /* Consistente con .terminal */
+}
+
+.terminal-input-line {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px; /* Ajustado para mejor espaciado */
+}
+
+.terminal-prompt {
+  color: #33ff33;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.terminal-input {
+  background: transparent;
+  border: none;
+  color: #33ff33;
+  font-family: 'Consolas', monospace;
+  flex: 1;
+  outline: none;
+  font-size: 16px; /* Consistente con .terminal */
+}
+
+.lock-screen {
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), 
+              url('img/glorp.png') center/cover no-repeat;
+  backdrop-filter: blur(10px);
+}
+
+.lock-content {
+  background: rgba(0,0,0,0.5);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(255,105,180,0.3);
+}
+
+.lock-input {
+  background: rgba(255,255,255,0.1);
+  border: 2px solid var(--primary);
+  color: white;
+  padding: 15px;
+  font-size: 18px;
+  margin: 20px 0;
+  transition: all 0.3s;
+}
+
+.lock-input:focus {
+  background: rgba(255,255,255,0.2);
+  box-shadow: 0 0 10px var(--primary);
+}
+
+.unlock-button {
+  background: var(--primary);
+  padding: 15px 30px;
+  font-size: 18px;
+  border-radius: 30px;
+  transition: all 0.3s;
+}
+
+.unlock-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px var(--primary);
+}
+
+.power-screen {
+  background: rgba(0,0,0,0.95); 
+  animation: fadeIn 0.5s ease-out;
+}
+
+.power-content {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* Start Menu Styles */
+.start-menu {
+    position: fixed;
+    bottom: 60px; /* Position above the taskbar */
+    left: 10px; /* Align with the Start button */
+    width: 300px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--dark);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    z-index: 1000; /* Ensure it's above other elements */
+    animation: fadeIn 0.3s ease-out;
+}
+
+.start-menu.active {
+    display: flex; /* Show when active */
+}
+
+.start-menu-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+
+.start-menu-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
+}
+
+.window {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) transparent;
+}
+
+.window::-webkit-scrollbar {
+  width: 8px;
+}
+
+.window::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.window::-webkit-scrollbar-thumb {
+  background-color: var(--primary);
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+
+.window::-webkit-scrollbar-thumb:hover {
+  background-color: var(--secondary);
+}
+
+@media (max-width: 768px) {
+  /* Aumentar el tamaño de los íconos del escritorio */
+  .desktop-icon {
+    width: 80px; /* Reducir el tamaño de los iconos para adaptarse mejor a la pantalla */
+    padding: 10px;
+  }
+
+  .icon-img {
+    width: 50px;
+    height: 50px;
+  }
+
+  /* Mejorar la barra de tareas en móviles */
+  .taskbar {
+    height: 60px;
+    padding: 10px;
+  }
+
+  /* Aumentar la resolución general en móviles */
+  body {
+    font-size: 18px; /* Aumentar el tamaño de fuente para mejor legibilidad */
+    overflow: hidden; /* Evitar scroll en body */
+  }
+
+  /* Ajustar el comportamiento de pantalla completa en móviles */
+  .window.fullscreen {
+    width: 100vw !important;
+    height: calc(100vh - 60px) !important; /* Subtract taskbar height */
+    top: 0 !important;
+    left: 0 !important;
+  }
+
+  /* Ajustar tamaño de controles de ventana */
+  .window-control {
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    padding: 8px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="boot-screen">
+  <img src="img/glorp.png" alt="GlorpCat OS Logo" class="boot-logo">
+  <div id="boot-messages"></div>
+  <div class="boot-progress">
+    <div class="boot-progress-bar"></div>
+  </div>
+</div>
+
+<div class="desktop">
+
+  <div class="desktop-icon" onclick="openGlorpWallet()">
+    <svg class="icon-img" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+      <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">💰</text>
+    </svg>
+    <div>GlorpWallet</div>
+  </div>
+
+  <div class="desktop-icon" onclick="openChart()">
+    <svg class="icon-img" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+      <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">📈</text>
+    </svg>
+    <div>Chart</div>
+  </div>
+
+  <div class="desktop-icon" onclick="openGenerator()">
+    <svg class="icon-img" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+      <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">✨</text>
+    </svg>
+    <div>Glorp Generator</div>
+  </div>
+
+  <div class="desktop-icon" onclick="openHome()">
+    <svg class="icon-img" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+      <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">🌐</text>
+    </svg>
+    <div>Web</div>
+  </div>
+
+  <div class="desktop-icon" onclick="openChat()">
+    <svg class="icon-img" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+      <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">💭</text>
+    </svg>
+    <div>GlorpChat</div>
+  </div>
+
+  <div class="desktop-icon" onclick="openGame()">
+    <svg class="icon-img" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+      <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">🎮</text>
+    </svg>
+    <div>GlorpCat Game</div>
+  </div>
+
+  <div class="desktop-icon" onclick="openMagicEden()">
+    <svg class="icon-img" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+      <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">🎨</text>
+    </svg>
+    <div>Magic Eden</div>
+  </div>
+
+  <div class="desktop-icon" onclick="openTerminal()">
+    <svg class="icon-img" viewBox="0 0 48 48">
+      <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+      <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">💻</text>
+    </svg>
+    <div>Terminal</div>
+  </div>
+
+</div>
+
+<div class="start-menu">
+  <div class="start-menu-item" onclick="openGlorpWallet()">
+    <span>💰</span>
+    <span>GlorpWallet</span>
+  </div>
+  <div class="start-menu-item" onclick="openChart()">
+    <span>📈</span>
+    <span>Chart</span>
+  </div>
+  <div class="start-menu-item" onclick="openGenerator()">
+    <span>✨</span>
+    <span>Glorp Generator</span>
+  </div>
+  <div class="start-menu-item" onclick="openGame()">
+    <span>🎮</span>
+    <span>GlorpCat Game</span>
+  </div>
+  <div class="start-menu-item" onclick="openMagicEden()">
+    <span>🎨</span>
+    <span>Magic Eden</span>
+  </div>
+  <div class="start-menu-item" onclick="openTerminal()">
+    <span>💻</span>
+    <span>Terminal</span>
+  </div>
+  <div class="start-menu-item" onclick="openSettings()">
+    <span>⚙️</span>
+    <span>Settings</span>
+  </div>
+  <div class="start-menu-item" onclick="openHelp()">
+    <span>❓</span>
+    <span>Help</span>
+  </div>
+  <div class="start-menu-item" onclick="lockSystem()">
+    <span>🔒</span>
+    <span>Lock</span>
+  </div>
+  <div class="start-menu-item" onclick="powerOff()">
+    <span>🔌</span>
+    <span>Power</span>
+  </div>
+</div>
+
+<div class="taskbar">
+  <div class="start-button" onclick="toggleStartMenu()">
+    <img src="img/glorp.png" alt="GlorpCat logo" width="24" height="24">
+    <span>Start</span>
+  </div>
+
+  <div class="taskbar-open-programs">
+    <!-- Open program icons will be dynamically added here -->
+  </div>
+  
+  <div class="taskbar-items"></div>
+  <div class="system-tray">
+    <span class="system-icon">📶</span>
+    <span id="clock">00:00</span>
+  </div>
+</div>
+
+<script>
+function createWindow(title, content, width = '800px', height = '600px') {
+  const windowId = 'window-' + Date.now();
+  const newWindow = document.createElement('div');
+  newWindow.className = 'window';
+  newWindow.id = windowId;
+
+  // Calculate centered position within the desktop
+  const desktop = document.querySelector('.desktop');
+  const desktopRect = desktop.getBoundingClientRect();
+  const calculatedWidth = window.innerWidth <= 768 ? '100vw' : width;
+  const calculatedHeight = window.innerWidth <= 768 ? 'calc(100vh - 60px)' : height;
+  const top = window.innerWidth <= 768 ? '0' : `${(desktopRect.height - parseInt(height)) / 2}px`;
+  const left = window.innerWidth <= 768 ? '0' : `${(window.innerWidth - parseInt(width)) / 2}px`;
+
+  newWindow.style.width = calculatedWidth;
+  newWindow.style.height = calculatedHeight;
+  newWindow.style.top = top;
+  newWindow.style.left = left;
+
+  newWindow.innerHTML = `
+    <div class="window-header ${title.toLowerCase() === 'terminal' ? 'terminal-header' : ''}">
+      <span>${title}</span>
+      <div class="window-controls">
+        <button class="window-control maximize" onclick="toggleMaximize('${windowId}')" aria-label="Maximize">
+          <svg width="12" height="12" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/>
+          </svg>
+        </button>
+        <button class="window-control minimize" onclick="minimizeWindow('${windowId}')" aria-label="Minimize">
+          <svg width="12" height="12" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M4 12h16v2H4z"/>
+          </svg>
+        </button>
+        <button class="window-control close" onclick="closeWindow('${windowId}')" aria-label="Close">
+          <svg width="12" height="12" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    ${content}
+  `;
+
+  document.querySelector('.desktop').appendChild(newWindow);
+  makeDraggable(newWindow);
+  addTaskbarItem(windowId, title);
+
+  // Add event listeners for touch devices
+  const closeButton = newWindow.querySelector('.window-control.close');
+  closeButton.addEventListener('touchstart', (e) => {
+    closeWindow(windowId);
+    e.preventDefault();
+  });
+
+  return newWindow;
+}
+
+function addTaskbarItem(windowId, title) {
+  const taskbarItem = document.createElement('div');
+  taskbarItem.className = 'taskbar-item';
+  taskbarItem.textContent = title;
+  taskbarItem.setAttribute('data-window', windowId);
+  taskbarItem.onclick = () => {
+    const windowElement = document.getElementById(windowId);
+    if (windowElement.classList.contains('minimized')) {
+      maximizeWindow(windowId);
+    } else {
+      minimizeWindow(windowId);
+    }
+  };
+  document.querySelector('.taskbar-items').appendChild(taskbarItem);
+
+  // Also add to the Open Programs Bar
+  const openProgramsBar = document.querySelector('.taskbar-open-programs');
+  const openProgramItem = document.createElement('div');
+  openProgramItem.className = 'open-program-item';
+  openProgramItem.textContent = title;
+  openProgramItem.setAttribute('data-window', windowId);
+  openProgramItem.onclick = () => {
+    const windowElement = document.getElementById(windowId);
+    if (windowElement.classList.contains('minimized')) {
+      maximizeWindow(windowId);
+    }
+    windowElement.focus();
+  };
+  openProgramsBar.appendChild(openProgramItem);
+
+  // Ensure Open Program is removed when window is closed
+  const originalCloseWindow = window.closeWindow;
+  window.closeWindow = function(id) {
+    originalCloseWindow(id);
+    const openProgramToRemove = document.querySelector(`.open-program-item[data-window="${id}"]`);
+    if (openProgramToRemove) {
+      openProgramToRemove.remove();
+    }
+  };
+}
+
+function makeDraggable(element) {
+  let isDragging = false;
+  let offsetX, offsetY;
+
+  const header = element.querySelector('.window-header');
+
+  // Mouse Events
+  header.addEventListener('mousedown', (e) => {
+    if (element.classList.contains('fullscreen')) return; // Disable dragging in fullscreen
+    isDragging = true;
+    offsetX = e.clientX - element.getBoundingClientRect().left;
+    offsetY = e.clientY - element.getBoundingClientRect().top;
+    element.classList.add('moving');
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    
+    const desktopHeight = document.querySelector('.desktop').clientHeight;
+    let left = e.clientX - offsetX;
+    let top = e.clientY - offsetY;
+
+    // Limits to prevent window from moving out of desktop bounds
+    left = Math.max(0, Math.min(left, window.innerWidth - element.offsetWidth));
+    top = Math.max(0, Math.min(top, desktopHeight - element.offsetHeight));
+
+    element.style.left = `${left}px`;
+    element.style.top = `${top}px`;
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+    element.classList.remove('moving');
+  });
+
+  // Touch Events for Mobile
+  header.addEventListener('touchstart', (e) => {
+    if (element.classList.contains('fullscreen')) return; // Disable dragging in fullscreen
+    isDragging = true;
+    const touch = e.touches[0];
+    offsetX = touch.clientX - element.getBoundingClientRect().left;
+    offsetY = touch.clientY - element.getBoundingClientRect().top;
+    element.classList.add('moving');
+    e.preventDefault();
+  });
+
+  document.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    const touch = e.touches[0];
+    const desktopHeight = document.querySelector('.desktop').clientHeight;
+    let left = touch.clientX - offsetX;
+    let top = touch.clientY - offsetY;
+
+    // Limits to prevent window from moving out of desktop bounds
+    left = Math.max(0, Math.min(left, window.innerWidth - element.offsetWidth));
+    top = Math.max(0, Math.min(top, desktopHeight - element.offsetHeight));
+
+    element.style.left = `${left}px`;
+    element.style.top = `${top}px`;
+  }, { passive: false });
+
+  document.addEventListener('touchend', () => {
+    isDragging = false;
+    element.classList.remove('moving');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const bootScreen = document.querySelector('.boot-screen');
+  setTimeout(() => {
+    bootScreen.style.opacity = 0;
+    setTimeout(() => bootScreen.remove(), 500);
+  }, 3000);
+
+  let chatSimulationInterval;
+
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent = 
+      now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  window.minimizeWindow = function(windowId) {
+    const windowElement = document.getElementById(windowId);
+    if (windowElement) {
+      windowElement.classList.add('minimized');
+      
+      // Update the corresponding taskbar item to indicate minimized state
+      const taskbarItem = document.querySelector(`.taskbar-item[data-window="${windowId}"]`);
+      if (taskbarItem) {
+        taskbarItem.classList.add('minimized');
+      }
+    }
+  };
+
+  window.maximizeWindow = function(windowId) {
+    const windowElement = document.getElementById(windowId);
+    if (windowElement) {
+      windowElement.classList.remove('minimized');
+      
+      // Update the corresponding taskbar item to indicate active state
+      const taskbarItem = document.querySelector(`.taskbar-item[data-window="${windowId}"]`);
+      if (taskbarItem) {
+        taskbarItem.classList.remove('minimized');
+      }
+    }
+  };
+
+  window.toggleMaximize = function(windowId) {
+    const windowElement = document.getElementById(windowId);
+    windowElement.classList.toggle('fullscreen');
+    
+    // Asegurar que la ventana maximizada no sea redimensionable
+    if (windowElement.classList.contains('fullscreen')) {
+      windowElement.style.resize = 'none';
+    } else {
+      windowElement.style.resize = 'both';
+    }
+  };
+
+  window.closeWindow = function(windowId) {
+    const windowElement = document.getElementById(windowId);
+    if (windowElement) {
+      if (windowElement.querySelector('.chat-window')) {
+        clearInterval(chatSimulationInterval);
+      }
+      windowElement.remove();
+      const taskbarItem = document.querySelector(`[data-window="${windowId}"]`);
+      if (taskbarItem) {
+        taskbarItem.remove();
+      }
+    }
+  };
+
+  window.openGenerator = function() {
+    createWindow('Glorp Generator', '<iframe src="https://glorp-meme.netlify.app/"></iframe>');
+  };
+
+  window.openHome = function() {
+    createWindow('Web', '<iframe src="https://glorpcat.lol"></iframe>');
+  };
+
+  window.openGlorpWallet = function() {
+    createWindow('GlorpWallet', '<iframe src="https://jup.ag/swap/SOL-FkBF9u1upwEMUPxnXjcydxxVSxgr8f3k1YXbz7G7bmtA" style="width: 100%; height: calc(100% - 40px); border: none;"></iframe>');
+  };
+
+  window.openChart = function() {
+    createWindow('Chart', '<iframe src="https://chart.glorpcat.lol/" style="width: 100%; height: calc(100% - 40px); border: none;"></iframe>');
+  };
+
+  window.openMagicEden = function() {
+    createWindow('Magic Eden', '<iframe src="https://magiceden.io/marketplace/glorp" style="width: 100%; height: calc(100% - 40px); border: none;"></iframe>');
+  };
+
+  window.openGame = function() {
+    const gameContent = `
+      <div id="game-container" style="width: 100%; height: calc(100% - 40px); background: #4DC1F9; overflow: hidden;">
+        <canvas id="gameCanvas" style="width: 100%; height: 100%;"></canvas>
+      </div>
+    `;
+    const gameWindow = createWindow('GlorpCat Game', gameContent, '400px', '600px');
+    
+    // Initialize game after window creation
+    setTimeout(() => {
+      initGame(gameWindow.querySelector('#gameCanvas'));
+    }, 100);
+  };
+
+  function initGame(canvas) {
+    const ctx = canvas.getContext('2d');
+    
+    // Function to resize the canvas based on viewport
+    function resizeCanvas() {
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+    }
+
+    // Initial resize
+    resizeCanvas();
+
+    // Resize the canvas whenever the window size changes
+    window.addEventListener('resize', resizeCanvas);
+
+    const glorpImage = new Image();
+    glorpImage.src = 'img/glorp.png';
+
+    const bird = {
+      x: canvas.width / 3,
+      y: canvas.height / 2,
+      velocity: 0,
+      gravity: 0.2, // Reducida la gravedad para mayor facilidad
+      jump: -5,      // Reducida la fuerza de salto
+      size: 30
+    };
+
+    const pipes = [];
+    let score = 0;
+    let gameOver = false;
+
+    function jumpAction() {
+      if (!gameOver) {
+        bird.velocity = bird.jump;
+      }
+    }
+
+    // Add both click and touch event listeners for jumping
+    canvas.addEventListener('click', jumpAction);
+    canvas.addEventListener('touchstart', (e) => {
+      jumpAction();
+      e.preventDefault(); // Prevent default touch behaviors
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') jumpAction();
+    });
+
+    function createPipe() {
+      const gap = 120; // Reducido el espacio entre tubos
+      const pipeWidth = 50;
+      const minHeight = 50;
+      const maxHeight = canvas.height - gap - minHeight;
+      const height = Math.random() * (maxHeight - minHeight) + minHeight;
+
+      pipes.push({
+        x: canvas.width,
+        top: height - canvas.height,
+        bottom: height + gap,
+        width: pipeWidth,
+        counted: false
+      });
+    }
+
+    function gameLoop() {
+      if (!canvas.isConnected) return; // Detener si la ventana se cierra
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Background
+      ctx.fillStyle = '#4DC1F9';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Bird
+      ctx.save();
+      ctx.translate(bird.x + bird.size / 2, bird.y + bird.size / 2);
+      ctx.rotate(bird.velocity * 0.02);
+      ctx.drawImage(glorpImage, -bird.size / 2, -bird.size / 2, bird.size, bird.size);
+      ctx.restore();
+
+      if (!gameOver) {
+        // Aplicar gravedad
+        bird.velocity += bird.gravity;
+        bird.y += bird.velocity;
+
+        // Pipe movement
+        if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 200) {
+          createPipe();
+        }
+
+        pipes.forEach((pipe, index) => {
+          pipe.x -= 2;
+
+          // Draw pipes
+          ctx.fillStyle = '#75C043';
+          ctx.fillRect(pipe.x, 0, pipe.width, pipe.top + canvas.height);
+          ctx.fillRect(pipe.x, pipe.bottom, pipe.width, canvas.height);
+
+          // Collision detection
+          if (bird.x + bird.size > pipe.x && bird.x < pipe.x + pipe.width &&
+              (bird.y < pipe.top + canvas.height || bird.y + bird.size > pipe.bottom)) {
+            gameOver = true;
+          }
+
+          // Score counting
+          if (!pipe.counted && bird.x > pipe.x + pipe.width) {
+            score++;
+            pipe.counted = true;
+          }
+
+          if (pipe.x + pipe.width < 0) pipes.splice(index, 1);
+        });
+
+        // Ground collision
+        if (bird.y + bird.size > canvas.height || bird.y < 0) {
+          gameOver = true;
+        }
+      }
+
+      // Score display
+      ctx.fillStyle = 'white';
+      ctx.font = '30px Arial';
+      ctx.fillText(`Puntuación: ${score}`, 10, 40);
+
+      if (gameOver) {
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'white';
+        ctx.font = '40px Arial';
+        ctx.fillText('¡Game Over!', canvas.width / 2 - 100, canvas.height / 2);
+        ctx.font = '20px Arial';
+        ctx.fillText('Haz clic para reiniciar', canvas.width / 2 - 80, canvas.height / 2 + 40);
+        
+        // Restart game on tap or click
+        canvas.addEventListener('click', restartGame, { once: true });
+        canvas.addEventListener('touchstart', restartGame, { once: true, passive: true });
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    function restartGame() {
+      bird.y = canvas.height / 2;
+      bird.velocity = 0;
+      pipes.length = 0;
+      score = 0;
+      gameOver = false;
+      gameLoop();
+    }
+
+    glorpImage.onload = () => {
+      gameLoop();
+    };
+  }
+
+  window.initChat = function() {
+    const spamMessages = [
+      "🚀 Buy GLORP now! 🚀",
+      "💰 GLORP to the moon! 💰",
+      "🔥 Don't miss out on GLORP! 🔥",
+      "✨ GLORP magic in action! ✨",
+      "📈 Invest in GLORP today! 📈",
+      "💎 GLORP is shining bright! 💎",
+      "🎉 Join the GLORP party! 🎉",
+      "🤖 GLORP bots are here! 🤖",
+      "🌟 GLORP is the future! 🌟",
+      "💸 Buy more GLORP! 💸"
+    ];
+    
+    function simulateSpam() {
+      const messagesDiv = document.querySelector('.chat-messages');
+      if (!messagesDiv) {
+        clearInterval(chatSimulationInterval);
+        return;
+      }
+
+      const messageContent = spamMessages[Math.floor(Math.random() * spamMessages.length)];
+      displayMessage({
+        type: 'text',
+        content: messageContent,
+        isSelf: false
+      });
+    }
+
+    // Intervalo más frecuente para simular spam constante
+    chatSimulationInterval = setInterval(simulateSpam, 3000);
+  };
+
+  window.sendMessage = function() {
+    const input = document.querySelector('.chat-input input');
+    const message = input.value.trim();
+    if (message) {
+      displayMessage({
+        type: 'text',
+        content: message,
+        isSelf: true
+      });
+      input.value = '';
+    }
+  };
+
+  function displayMessage(message) {
+    const messagesDiv = document.querySelector('.chat-messages');
+    if (!messagesDiv) return;
+    
+    const messageEl = document.createElement('div');
+    messageEl.className = `message ${message.isSelf ? 'sent' : 'received'}`;
+    
+    // Avatar
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.textContent = message.isSelf ? 'G' : '👤'; // 'G' for GlorpChat user
+
+    // Message content
+    const content = document.createElement('div');
+    content.className = 'content';
+    content.textContent = message.content;
+    
+    // Timestamp
+    const timestamp = document.createElement('div');
+    timestamp.className = 'timestamp';
+    const now = new Date();
+    timestamp.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    // Assemble message
+    if (message.isSelf) {
+      messageEl.appendChild(content);
+      messageEl.appendChild(avatar);
+    } else {
+      messageEl.appendChild(avatar);
+      messageEl.appendChild(content);
+    }
+    messageEl.appendChild(timestamp);
+    
+    messagesDiv.appendChild(messageEl);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  const bootMessages = [
+    "Initializing GlorpCat OS v1.0...",
+    "Loading Glorp Modules...",
+    "Calculating Glorp Trajectories...", 
+    "Preparing Glorp Launch Sequence...",
+    "Syncing with Glorp Network...",
+    "Creating Glorp Systems...",
+    "Starting GlorpCat Services...",
+    "Welcome to GlorpCat OS!"
+  ];
+
+  function showBootMessages() {
+    const messageDiv = document.getElementById('boot-messages');
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i < bootMessages.length) {
+        messageDiv.innerHTML = bootMessages[i];
+        i++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 400);
+  }
+
+  showBootMessages();
+});
+
+document.querySelectorAll('.window').forEach(makeDraggable);
+
+window.toggleStartMenu = function() {
+  const startMenu = document.querySelector('.start-menu');
+  startMenu.classList.toggle('active');
+  
+  const closeMenu = (e) => {
+    if (!e.target.closest('.start-menu') && !e.target.closest('.start-button')) {
+      startMenu.classList.remove('active');
+      document.removeEventListener('click', closeMenu);
+    }
+  }
+  
+  if (startMenu.classList.contains('active')) {
+    setTimeout(() => {
+      document.addEventListener('click', closeMenu);
+    }, 0);
+  }
+}
+
+window.openChat = function() {
+  const chatContent = `
+    <div class="chat-window">
+      <div class="chat-messages"></div>
+      <div class="chat-input">
+        <input type="text" placeholder="Type your message..." onkeypress="if(event.key === 'Enter') sendMessage()">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  `;
+  const chatWindow = createWindow('GlorpChat', chatContent, '400px', '600px');
+  initChat();
+};
+
+window.openHelp = function() {
+  const helpContent = `
+    <div style="padding: 20px; text-align: center;">
+      <h2>Made with love by frxn</h2>
+      <p><a href="https://t.me/frxnco" target="_blank" style="color: var(--primary);">Visit me on Telegram</a></p>
+    </div>
+  `;
+  createWindow('Help', helpContent, '400px', '200px');
+};
+
+window.lockSystem = function() {
+  const lockScreen = document.createElement('div');
+  lockScreen.className = 'lock-screen';
+  lockScreen.innerHTML = `
+    <div class="lock-content">
+      <img src="img/glorp.png" alt="GlorpCat Logo" class="lock-logo">
+      <input type="password" placeholder="Enter password" class="lock-input">
+      <button onclick="unlockSystem()" class="unlock-button">Unlock</button>
+    </div>
+  `;
+  document.body.appendChild(lockScreen);
+}
+
+window.unlockSystem = function() {
+  const password = document.querySelector('.lock-input').value;
+  if(password === 'glorp') {
+    document.querySelector('.lock-screen').remove();
+  } else {
+    alert('Incorrect password!');
+  }
+}
+
+window.powerOff = function() {
+  const powerScreen = document.createElement('div');
+  powerScreen.className = 'power-screen';
+  powerScreen.innerHTML = `
+    <div class="power-content">
+      <div class="power-text">Shutting down...</div>
+      <button onclick="location.reload()" class="power-button">Power On</button>
+    </div>
+  `;
+  document.body.appendChild(powerScreen);
+}
+
+window.openSettings = function() {
+  const settingsContent = `
+    <div class="settings-window">
+      <h2>Theme Settings</h2>
+      <div class="color-themes">
+        <div class="theme-option" onclick="setTheme('default')">
+          <div class="theme-preview" style="background: linear-gradient(45deg, #ff69b4, #ffbd44)"></div>
+          <span>Default</span>
+        </div>
+        <div class="theme-option" onclick="setTheme('dark')">
+          <div class="theme-preview" style="background: linear-gradient(45deg, #2c3e50, #3498db)"></div>
+          <span>Dark</span>
+        </div>
+        <div class="theme-option" onclick="setTheme('forest')">
+          <div class="theme-preview" style="background: linear-gradient(45deg, #27ae60, #2ecc71)"></div>
+          <span>Forest</span>
+        </div>
+      </div>
+    </div>
+  `;
+  createWindow('Settings', settingsContent, '400px', '300px');
+}
+
+window.setTheme = function(theme) {
+  const themes = {
+    default: {
+      primary: '#ff69b4',
+      secondary: '#ffbd44'
+    },
+    dark: {
+      primary: '#3498db',
+      secondary: '#2c3e50'
+    },
+    forest: {
+      primary: '#27ae60',
+      secondary: '#2ecc71'
+    }
+  };
+  
+  const root = document.documentElement;
+  root.style.setProperty('--primary', themes[theme].primary);
+  root.style.setProperty('--secondary', themes[theme].secondary);
+}
+
+window.openTerminal = function() {
+  const terminalContent = `
+    <div class="terminal">
+      <div class="terminal-output">Welcome to GlorpOS Terminal v1.0!
+Type 'help' for available commands</div>
+      <div class="terminal-input-line">
+        <span class="terminal-prompt">glorp@cat:~$</span>
+        <input type="text" class="terminal-input" onkeypress="if(event.key === 'Enter') executeCommand(this)">
+      </div>
+    </div>
+  `;
+  createWindow('Terminal', terminalContent, '600px', '400px');
+  
+  const terminalInput = document.querySelector('.terminal-input');
+  if (terminalInput) {
+    terminalInput.focus();
+  }
+};
+
+function executeCommand(input) {
+  const command = input.value.trim().toLowerCase();
+  const output = document.querySelector('.terminal-output');
+  
+  const commands = {
+    help: "Available commands:\nhelp - Show this message\nclear - Clear terminal\nglorp - Show glorp stats\nmeow - Make some noise\nls - List files",
+    clear: () => output.textContent = '',
+    glorp: "Current glorp price: ∞ SOL\nMarket cap: To the moon! 🚀",
+    meow: "😺 Meeeeeooooowww!",
+    ls: "Desktop/\nDocuments/\nglorp.exe\ncat.png\ntothemoon.sol"
+  };
+
+  output.textContent += `\nglorp@cat:~$ ${command}`;
+  
+  if (commands[command]) {
+    output.textContent += '\n' + (typeof commands[command] === 'function' ? commands[command]() : commands[command]);
+  } else if (command) {
+    output.textContent += '\nCommand not found: ' + command;
+  }
+  
+  input.value = '';
+  output.scrollTop = output.scrollHeight;
+}
+
+// Ensure close buttons respond to touch events
+</script>
+
+</body></html>
