@@ -16,7 +16,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Tahoma', sans-serif;
-  background: url('https://www.glorpcat.lol/glorp.png') center/cover fixed no-repeat;
+  background: url('https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/assets/bg.jpg') center/cover fixed no-repeat;
   height: 100vh;
   overflow-x: hidden;
   width: 100vw;
@@ -25,23 +25,21 @@ body {
 }
 
 .desktop {
-  height: calc(100vh - 60px);
-  width: 100vw;
+  height: 100vh;
+  width: 100%;
   position: relative;
-  padding: 10px;
-  backdrop-filter: blur(var(--blur-amount));
+  padding: 20px;
   display: grid;
   grid-template-columns: repeat(2, 100px);
   gap: 15px 30px;
   justify-content: start;
   align-items: start;
   align-content: start;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   z-index: 1;
   box-sizing: border-box;
   margin: 0;
-  max-width: 100%;
+  background: transparent;
 }
 
 .desktop-icon {
@@ -826,7 +824,7 @@ body {
 <body>
 
 <div class="boot-screen">
-  <img src="https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/glorp%20(1).png" alt="GlorpCat OS Logo" class="boot-logo">
+  <img src="https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/assets/glorphead.png" alt="GlorpCat OS Logo" class="boot-logo">
   <div id="boot-messages"></div>
   <div class="boot-progress">
     <div class="boot-progress-bar"></div>
@@ -880,7 +878,7 @@ body {
       <rect width="48" height="48" rx="8" fill="#ff69b4"/>
       <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">🎮</text>
     </svg>
-    <div>FlappyGlorp</div>
+    <div>Glorpy Bird</div>
   </div>
 
   <div class="desktop-icon" onclick="openMagicEden()">
@@ -966,7 +964,7 @@ body {
 
 <div class="taskbar">
   <div class="start-button" onclick="toggleStartMenu()">
-    <img src="https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/glorp%20(1).png" alt="GlorpCat logo" width="24" height="24">
+    <img src="https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/assets/glorphead.png" alt="GlorpCat logo" width="24" height="24">
     <span>Start</span>
   </div>
 
@@ -1355,7 +1353,7 @@ Type 'help' for a list of commands.</div>
 
 
     const glorpImage = new Image();
-    glorpImage.src = 'https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/glorp%20(1).png';
+    glorpImage.src = 'https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/assets/glorphead.png';
 
     // Initialize high scores
     updateHighScores();
@@ -1595,7 +1593,7 @@ Type 'help' for a list of commands.</div>
     // Avatar using glorp image
     const avatar = document.createElement('div');
     avatar.className = 'avatar';
-    avatar.style.background = `url('https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/glorp%20(1).png') center/cover`;
+    avatar.style.background = `url('https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/assets/glorphead.png') center/cover`;
     avatar.style.width = '40px';
     avatar.style.height = '40px';
 
@@ -1705,7 +1703,7 @@ window.lockSystem = function() {
   lockScreen.className = 'lock-screen';
   lockScreen.innerHTML = `
     <div class="lock-content">
-      <img src="https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/glorp%20(1).png" alt="GlorpCat Logo" class="lock-logo">
+      <img src="https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/assets/glorphead.png" alt="GlorpCat Logo" class="lock-logo">
       <h2 style="margin-bottom: 20px;">GlorpCat OS</h2>
       <input type="password" placeholder="Enter password to unlock" class="lock-input" onkeypress="if(event.key === 'Enter') unlockSystem()">
       <button onclick="unlockSystem()" class="unlock-button">Unlock System</button>
@@ -1729,7 +1727,7 @@ window.powerOff = function() {
   powerScreen.className = 'power-screen';
   powerScreen.innerHTML = `
     <div class="power-content">
-      <img src="https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/glorp%20(1).png" alt="GlorpCat Logo" class="power-logo">
+      <img src="https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/assets/glorphead.png" alt="GlorpCat Logo" class="power-logo">
       <div class="power-text">Shutting down GlorpCat OS...</div>
       <p style="margin: 20px 0;">Your system is now safe to turn off</p>
       <button onclick="location.reload()" class="power-button">Power On</button>
@@ -1758,7 +1756,7 @@ window.openDonate = function() {
       justify-content: center;
       gap: 20px;
     ">
-      <img src="https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/glorp%20(1).png" alt="GlorpCat Logo" style="
+      <img src="https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/assets/glorphead.png" alt="GlorpCat Logo" style="
         width: 100px;
         height: 100px;
         border-radius: 50%;
