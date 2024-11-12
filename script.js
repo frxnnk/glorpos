@@ -14,14 +14,13 @@ function createWindow(title, content, width = '800px', height = '600px') {
     
     if (isMobile) {
         // Mobile specific dimensions
-        finalWidth = viewportWidth * 0.9; // Use 90% of viewport width
+        finalWidth = viewportWidth * 0.9; // 90% of viewport width
         finalHeight = Math.min(requestedHeight, viewportHeight * 0.8);
         
-        // Calculate center position for mobile (both vertical and horizontal)
-        const top = Math.max(0, (viewportHeight - finalHeight) / 2);
+        // Calculate position - moved higher up but not flush with top
+        const top = Math.max(20, viewportHeight * 0.1); // 10% from top or minimum 20px
         const left = (viewportWidth - finalWidth) / 2;
         
-        // Apply styles with important flags
         newWindow.style.cssText = `
             width: ${finalWidth}px !important;
             height: ${finalHeight}px !important;
@@ -52,49 +51,53 @@ function createWindow(title, content, width = '800px', height = '600px') {
             transform: 'translate3d(0,0,0)'
         });
     }
-  newWindow.innerHTML = `
-    <div class="window-header ${title.toLowerCase() === 'terminal' ? 'terminal-header' : ''}">
-      <span>${title}</span>
-      <div class="window-controls">
-        <button class="window-control maximize" onclick="toggleMaximize('${windowId}')" aria-label="Maximize">
-          <svg width="12" height="12" viewBox="0 0 24 24">
+
+    const maximizeButton = isMobile ? '' : `
+    <button class="window-control maximize" onclick="toggleMaximize('${windowId}')" aria-label="Maximize">
+        <svg width="12" height="12" viewBox="0 0 24 24">
             <path fill="currentColor" d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/>
-          </svg>
-        </button>
-        <button class="window-control minimize" onclick="minimizeWindow('${windowId}')" aria-label="Minimize">
-          <svg width="12" height="12" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M4 12h16v2H4z"/>
-          </svg>
-        </button>
-        <button class="window-control close" onclick="closeWindow('${windowId}')" aria-label="Close">
-          <svg width="12" height="12" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M18 6L6 18M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
+        </svg>
+    </button>
+    `;
+
+    newWindow.innerHTML = `
+    <div class="window-header ${title.toLowerCase() === 'terminal' ? 'terminal-header' : ''}">
+        <span>${title}</span>
+        <div class="window-controls">
+            ${maximizeButton}
+            <button class="window-control minimize" onclick="minimizeWindow('${windowId}')" aria-label="Minimize">
+                <svg width="12" height="12" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M4 12h16v2H4z"/>
+                </svg>
+            </button>
+            <button class="window-control close" onclick="closeWindow('${windowId}')" aria-label="Close">
+                <svg width="12" height="12" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
     </div>
     ${content}
-  `;
+    `;
+    const minimizeBtn = newWindow.querySelector('.window-control.minimize');
+    if (minimizeBtn) {
+        // Add touch event handling
+        minimizeBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        minimizeWindow(windowId);
+        });
+    }
 
-  const minimizeBtn = newWindow.querySelector('.window-control.minimize');
-  if (minimizeBtn) {
-    // Add touch event handling
-    minimizeBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      minimizeWindow(windowId);
+    document.querySelector('.desktop').appendChild(newWindow);
+    makeDraggable(newWindow);
+    addTaskbarItem(windowId, title);
+
+    // Add event listeners for touch devices
+    const closeButton = newWindow.querySelector('.window-control.close');
+    closeButton.addEventListener('touchstart', (e) => {
+        closeWindow(windowId);
+        e.preventDefault();
     });
-  }
-
-  document.querySelector('.desktop').appendChild(newWindow);
-  makeDraggable(newWindow);
-  addTaskbarItem(windowId, title);
-
-  // Add event listeners for touch devices
-  const closeButton = newWindow.querySelector('.window-control.close');
-  closeButton.addEventListener('touchstart', (e) => {
-    closeWindow(windowId);
-    e.preventDefault();
-  });
 
   
 
@@ -137,72 +140,69 @@ function addTaskbarItem(windowId, title) {
 }
 
 function makeDraggable(element) {
-  let isDragging = false;
-  let offsetX, offsetY;
-
-  const header = element.querySelector('.window-header');
-
-  // Mouse Events
-  header.addEventListener('mousedown', (e) => {
-    if (element.classList.contains('fullscreen')) return; // Disable dragging in fullscreen
-    isDragging = true;
-    offsetX = e.clientX - element.getBoundingClientRect().left;
-    offsetY = e.clientY - element.getBoundingClientRect().top;
-    element.classList.add('moving');
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    e.preventDefault();
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const header = element.querySelector('.window-header');
     
-    const desktopHeight = document.querySelector('.desktop').clientHeight;
-    let left = e.clientX - offsetX;
-    let top = e.clientY - offsetY;
+    if (isMobile) {
+        // En mobile, solo prevenir el comportamiento por defecto
+        header.addEventListener('touchstart', (e) => {
+            // Solo permite clicks en los botones de control
+            if (!e.target.closest('.window-controls')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
 
-    // Limits to prevent window from moving out of desktop bounds
-    left = Math.max(0, Math.min(left, window.innerWidth - element.offsetWidth));
-    top = Math.max(0, Math.min(top, desktopHeight - element.offsetHeight));
+        header.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        }, { passive: false });
 
-    element.style.left = `${left}px`;
-    element.style.top = `${top}px`;
-  });
+        header.addEventListener('touchend', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+        
+    } else {
+        // Comportamiento normal de drag para desktop
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
 
-  document.addEventListener('mouseup', () => {
-    isDragging = false;
-    element.classList.remove('moving');
-  });
+        header.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', dragEnd);
 
-  // Touch Events for Mobile
-  header.addEventListener('touchstart', (e) => {
-    if (element.classList.contains('fullscreen')) return; // Disable dragging in fullscreen
-    isDragging = true;
-    const touch = e.touches[0];
-    offsetX = touch.clientX - element.getBoundingClientRect().left;
-    offsetY = touch.clientY - element.getBoundingClientRect().top;
-    element.classList.add('moving');
-    e.preventDefault();
-  });
+        function dragStart(e) {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
 
-  document.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
-    const touch = e.touches[0];
-    const desktopHeight = document.querySelector('.desktop').clientHeight;
-    let left = touch.clientX - offsetX;
-    let top = touch.clientY - offsetY;
+            if (e.target.closest('.window-header')) {
+                isDragging = true;
+                element.classList.add('moving');
+            }
+        }
 
-    // Limits to prevent window from moving out of desktop bounds
-    left = Math.max(0, Math.min(left, window.innerWidth - element.offsetWidth));
-    top = Math.max(0, Math.min(top, desktopHeight - element.offsetHeight));
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+                xOffset = currentX;
+                yOffset = currentY;
 
-    element.style.left = `${left}px`;
-    element.style.top = `${top}px`;
-  }, { passive: false });
+                element.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+            }
+        }
 
-  document.addEventListener('touchend', () => {
-    isDragging = false;
-    element.classList.remove('moving');
-  });
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+            element.classList.remove('moving');
+        }
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -352,21 +352,49 @@ Type 'help' for a list of commands.</div>
 
   window.openGame = function() {
     const gameContent = `
-      <div id="game-container" style="width: 100%; height: calc(100% - 40px); background: #4DC1F9; overflow: hidden;">
-        <canvas id="gameCanvas" style="width: 100%; height: 100%;"></canvas>
-        <div id="highscores" style="position: absolute; top: 120px; right: 10px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 8px; color: white;">
-          <h3 style="margin: 0 0 5px 0">High Scores</h3>
-          <div id="scores-list"></div>
+        <div class="game-container">
+            <canvas id="gameCanvas"></canvas>
         </div>
-      </div>
     `;
-    const gameWindow = createWindow('Glorpy Bird', gameContent, '400px', '600px');
     
-    // Initialize game after window creation
-    setTimeout(() => {
-      initGame(gameWindow.querySelector('#gameCanvas'));
-    }, 100);
-  };
+    const gameWindow = createWindow('Glorpy Bird', gameContent, '800px', '600px');
+    const canvas = gameWindow.querySelector('#gameCanvas');
+    
+    // Base canvas resolution
+    canvas.width = 800;
+    canvas.height = 600;
+    
+    const resizeGame = () => {
+        const container = canvas.parentElement;
+        const isMaximized = gameWindow.classList.contains('maximized');
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+        
+        // Calculate optimal scale while maintaining aspect ratio
+        const scaleX = containerWidth / canvas.width;
+        const scaleY = containerHeight / canvas.height;
+        const scale = Math.min(scaleX, scaleY);
+        
+        // Apply scaled dimensions
+        canvas.style.width = `${canvas.width * scale}px`;
+        canvas.style.height = `${canvas.height * scale}px`;
+    };
+    
+    // Watch for container size changes
+    const resizeObserver = new ResizeObserver(resizeGame);
+    resizeObserver.observe(canvas.parentElement);
+    
+    // Handle maximize/restore
+    const originalToggleMaximize = window.toggleMaximize;
+    window.toggleMaximize = (windowId) => {
+        originalToggleMaximize(windowId);
+        if (windowId === gameWindow.id) {
+            setTimeout(resizeGame, 0);
+        }
+    };
+    
+    initGame(canvas);
+};
 
     function initGame(canvas) {
     const ctx = canvas.getContext('2d');
