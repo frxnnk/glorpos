@@ -1007,7 +1007,7 @@ window.openDonate = function() {
           word-break: break-all;
         ">
           <p style="margin: 0;">
-            4g49ZPzQHVeQNzxnuBnTyH74iwqVvVzRvqYBjoWqbK5K
+            4gUvCo1DWxUwfeyDKJzqZy7HU1pfekLeucGkz3TN7CmT
           </p>
         </div>
       </div>
