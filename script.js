@@ -1,27 +1,57 @@
 function createWindow(title, content, width = '800px', height = '600px') {
-  const windowId = 'window-' + Date.now();
-  const newWindow = document.createElement('div');
-  newWindow.className = 'window';
-  newWindow.id = windowId;
-
-  // Calculate dimensions based on viewport
-  const maxWidth = window.innerWidth - 20;
-  const maxHeight = window.innerHeight - 80;
-  const requestedWidth = parseInt(width);
-  const requestedHeight = parseInt(height);
+    const windowId = 'window-' + Date.now();
+    const newWindow = document.createElement('div');
+    newWindow.className = 'window';
+    newWindow.id = windowId;
   
-  const finalWidth = Math.min(requestedWidth, maxWidth);
-  const finalHeight = Math.min(requestedHeight, maxHeight);
-
-  // Center the window
-  const left = Math.max(10, (window.innerWidth - finalWidth) / 2);
-  const top = Math.max(10, (window.innerHeight - finalHeight - 60) / 2);
-
-  newWindow.style.width = finalWidth + 'px';
-  newWindow.style.height = finalHeight + 'px';
-  newWindow.style.top = top + 'px';
-  newWindow.style.left = left + 'px';
-
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    
+    let requestedWidth = parseInt(width);
+    let requestedHeight = parseInt(height);
+    let finalWidth, finalHeight;
+    
+    if (isMobile) {
+        // Mobile specific dimensions
+        finalWidth = viewportWidth * 0.9; // Use 90% of viewport width
+        finalHeight = Math.min(requestedHeight, viewportHeight * 0.8);
+        
+        // Calculate center position for mobile (both vertical and horizontal)
+        const top = Math.max(0, (viewportHeight - finalHeight) / 2);
+        const left = (viewportWidth - finalWidth) / 2;
+        
+        // Apply styles with important flags
+        newWindow.style.cssText = `
+            width: ${finalWidth}px !important;
+            height: ${finalHeight}px !important;
+            position: absolute !important;
+            top: ${top}px !important;
+            left: ${left}px !important;
+            visibility: visible !important;
+            z-index: 1000 !important;
+        `;
+    } else {
+        // Desktop behavior remains the same
+        const maxWidth = viewportWidth - 40;
+        const maxHeight = viewportHeight - 100;
+        
+        finalWidth = Math.min(requestedWidth, maxWidth);
+        finalHeight = Math.min(requestedHeight, maxHeight);
+        
+        const left = Math.max(20, (viewportWidth - finalWidth) / 2);
+        const top = Math.max(20, (viewportHeight - finalHeight) / 2);
+        
+        Object.assign(newWindow.style, {
+            width: `${finalWidth}px`,
+            height: `${finalHeight}px`,
+            position: 'absolute',
+            top: `${top}px`,
+            left: `${left}px`,
+            visibility: 'visible',
+            transform: 'translate3d(0,0,0)'
+        });
+    }
   newWindow.innerHTML = `
     <div class="window-header ${title.toLowerCase() === 'terminal' ? 'terminal-header' : ''}">
       <span>${title}</span>
@@ -65,6 +95,8 @@ function createWindow(title, content, width = '800px', height = '600px') {
     closeWindow(windowId);
     e.preventDefault();
   });
+
+  
 
   return newWindow;
 }
