@@ -11,13 +11,43 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Tahoma', sans-serif;
-  background: url('https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/assets/bg.jpg') center/cover fixed no-repeat;
-  height: 100vh;
-  overflow-x: hidden;
+  min-height: 100vh;
   width: 100vw;
-  image-rendering: -webkit-optimize-contrast; /* Sharper image on Chrome/Safari */
-  image-rendering: crisp-edges; /* Sharper image on Firefox */
+  background-color: var(--primary); /* Fallback */
+  overflow: hidden;
+  font-family: Roboto, sans-serif;
+}
+
+/* Add wrapper for background */
+.background-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+.background-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/assets/bg.jpg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  transform: scale(1.1); /* Slightly larger to prevent white edges */
+}
+
+/* Desktop specific adjustments */
+@media (min-width: 769px) {
+  .background-wrapper::before {
+    background-position: center top;
+    background-size: 100% auto;
+  }
 }
 
 .desktop {
@@ -257,27 +287,27 @@ body {
   to { transform: scale(1); opacity: 1; }
 }
 .game-container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary);
-  overflow: hidden;
-  position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    overflow: hidden;
+    position: relative;
 }
 
 .game-container canvas {
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 
 /* Handle maximized state */
 .window.maximized .game-container {
-  height: calc(100vh - 90px); /* Account for window header and taskbar */
+    height: calc(100vh - 90px); /* Account for window header and taskbar */
 }
 .taskbar {
   height: 60px;
@@ -413,6 +443,30 @@ body {
   min-width: 70px;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+/* Add these styles to your CSS */
+.game-leaderboard {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  z-index: 1000;
+}
+
+.leaderboard-item {
+  display: grid;
+  grid-template-columns: 30px 1fr 60px;
+  gap: 10px;
+  padding: 5px;
+  margin: 5px 0;
+}
+
+.gold { background: linear-gradient(90deg, rgba(255,215,0,0.3), transparent); }
+.silver { background: linear-gradient(90deg, rgba(192,192,192,0.3), transparent); }
+.bronze { background: linear-gradient(90deg, rgba(205,127,50,0.3), transparent); }
 
 #clock {
   font-family: 'Consolas', monospace;
