@@ -1,3 +1,69 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+import { getFirestore, collection, getDocs, addDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+window.isScoreSaved = false;
+const firebaseConfig = {
+    apiKey: "AIzaSyCKNXXV3r4jV-UewRFFNIRRuGn2_LhN30I",
+    authDomain: "glorpybird.firebaseapp.com",
+    projectId: "glorpybird",
+    storageBucket: "glorpybird.firebasestorage.app",
+    messagingSenderId: "70125995385",
+    appId: "1:70125995385:web:0c09ce3b8d7c4cc6fd1ba8",
+    measurementId: "G-5T3FZ7DLNP"
+  };
+
+  
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getFirestore(app);
+
+async function getTopScores() {
+    const scoresRef = collection(db, "scores");
+    const q = query(scoresRef, orderBy("score", "desc"), limit(3));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      score: Number(doc.data().score) // Asegurar que 'score' es un número
+    }));
+  }
+
+async function saveScore(score, playerName) {
+    const topScores = await getTopScores();
+    if (topScores.length < 3 || score > topScores[topScores.length - 1].score) {
+        await addDoc(collection(db, "scores"), {
+            score: score,
+            playerName: playerName,
+            date: new Date().toISOString()
+        });
+        return true;
+    }
+    return false;
+}
+
+async function updateLeaderboardDisplay() {
+    try {
+        const topScores = await getTopScores();
+        const leaderboardElement = document.querySelector('.game-leaderboard');
+        if (leaderboardElement) {
+            leaderboardElement.innerHTML = `
+                <h3>Top 3 Global Scores</h3>
+                <div class="leaderboard-list">
+                    ${topScores.map((entry, index) => `
+                        <div class="leaderboard-item ${index === 0 ? 'gold' : index === 1 ? 'silver' : 'bronze'}">
+                            <span class="rank">#${index + 1}</span>
+                            <span class="name">${entry.playerName}</span>
+                            <span class="score">${entry.score}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error("Error updating leaderboard:", error);
+    }
+}
+
 function createWindow(title, content, width = '800px', height = '600px') {
     const windowId = 'window-' + Date.now();
     const newWindow = document.createElement('div');
@@ -353,11 +419,15 @@ Type 'help' for a list of commands.</div>
   window.openGame = function() {
     const gameContent = `
         <div class="game-container">
+            <div class="game-leaderboard">
+                <h3>Loading scores...</h3>
+            </div>
             <canvas id="gameCanvas"></canvas>
         </div>
     `;
     
     const gameWindow = createWindow('Glorpy Bird', gameContent, '800px', '600px');
+    updateLeaderboardDisplay();
     const canvas = gameWindow.querySelector('#gameCanvas');
     
     // Base canvas resolution
@@ -395,6 +465,54 @@ Type 'help' for a list of commands.</div>
     
     initGame(canvas);
 };
+
+// Modify game over function
+async function gameOverFunct(finalScore) {
+    try {
+        if (window.isScoreSaved) return;
+
+        const topScores = await getTopScores();
+        console.log('Current top scores:', topScores);
+        console.log('New score:', finalScore);
+
+        const isTopScore = topScores.length < 3 || finalScore > Math.min(...topScores.map(s => s.score));
+        console.log('Is top score:', isTopScore);
+
+        if (isTopScore) {
+            const playerName = prompt(`¡Felicidades! Has alcanzado el Top 3 con ${finalScore} puntos.\nIngresa tu nombre:`);
+
+            if (playerName) {
+                const saved = await saveScore(finalScore, playerName);
+                if (saved) {
+                    console.log('Puntaje guardado exitosamente');
+                    await updateLeaderboardDisplay();
+                    window.isScoreSaved = true; // Marcar como guardado antes de resetear
+                    resetGame();
+                    return; // Salir para prevenir manejos posteriores
+                }
+            }
+        }
+
+        window.isScoreSaved = true; // Marcar como guardado incluso si no es top score
+
+    } catch (error) {
+        console.error("Error al manejar el final del juego:", error);
+        window.isScoreSaved = true;
+    }
+
+    // Agregar manejadores por defecto si no es top score
+    gameCanvas.onclick = () => { // Reemplazar 'canvas' con 'gameCanvas'
+        console.log('Restarting game...');
+        resetGame();
+        gameLoop();
+    };
+    gameCanvas.ontouchstart = (e) => { // Reemplazar 'canvas' con 'gameCanvas'
+        e.preventDefault();
+        console.log('Restarting game...');
+        resetGame();
+        gameLoop();
+    };
+}
 
     function initGame(canvas) {
     const ctx = canvas.getContext('2d');
@@ -483,7 +601,7 @@ Type 'help' for a list of commands.</div>
       });
     }
 
-    function gameLoop() {
+    async function gameLoop() {
       if (!canvas.isConnected) return;
       
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -513,6 +631,7 @@ Type 'help' for a list of commands.</div>
       ctx.restore();
 
       if (!gameOver) {
+        
         bird.velocity += bird.gravity;
         bird.y += bird.velocity;
 
@@ -582,33 +701,47 @@ Type 'help' for a list of commands.</div>
         ctx.fillText(`Final Score: ${score}`, canvas.width/2, canvas.height/2 + 10);
         ctx.font = '20px Arial';
         ctx.fillText('Tap to play again', canvas.width/2, canvas.height/2 + 50);
-
         // Submit score when game ends
-        submitScore(score);
+        await gameOverFunct(score);
         
-        canvas.onclick = resetGame;
-        canvas.ontouchstart = (e) => {
-          e.preventDefault();
-          resetGame();
-        };
-      }
+// Definir y asignar la función de reinicio
+function restartGame() {
+    console.log('Restarting game...');
+    resetGame();
+    gameLoop(); // Reiniciar el bucle del juego
+}
 
-      requestAnimationFrame(gameLoop);
+canvas.onclick = restartGame;
+canvas.ontouchstart = (e) => {
+    e.preventDefault();
+    restartGame();
+};
+
+return; // Salir del ciclo actual
+}
+
+requestAnimationFrame(gameLoop);
     }
 
     function resetGame() {
-      bird.y = canvas.height / 2;
-      bird.velocity = 0;
-      pipes.length = 0;
-      score = 0;
-      gameSpeed = 1.5;
-      gameOver = false;
-      canvas.onclick = jump;
-      canvas.ontouchstart = (e) => {
-        e.preventDefault();
-        jump();
-      };
+        if (!gameCanvas || !bird) return; // Guardar contra undefined
+    
+        window.isScoreSaved = false; // Restablecer al iniciar un nuevo juego
+        bird.y = gameCanvas.height / 2;
+        bird.velocity = 0;
+        pipes.length = 0;
+        score = 0;
+        gameSpeed = 1.5;
+        gameOver = false;
+    
+        // Restablecer manejadores de entrada
+        gameCanvas.onclick = jump;
+        gameCanvas.ontouchstart = (e) => {
+            e.preventDefault();
+            jump();
+        };
     }
+      
 
     glorpImage.onload = () => {
       gameLoop();
@@ -854,7 +987,7 @@ window.openDonate = function() {
         opacity: 0.9;
         max-width: 80%;
         line-height: 1.5;
-      ">Your donations help keep GlorpCat OS free and open for everyone! Help us continue developing new features and improvements.</p>
+      ">Your donations help keep GlorpCat OS free and open for everyone!</p>
       
       <div style="
         background: rgba(255,255,255,0.1);
@@ -873,9 +1006,6 @@ window.openDonate = function() {
           font-size: 14px;
           word-break: break-all;
         ">
-          <p style="margin: 0 0 10px 0;">
-            <strong style="color: #ffd700;">frxnDev.sol</strong>
-          </p>
           <p style="margin: 0;">
             4g49ZPzQHVeQNzxnuBnTyH74iwqVvVzRvqYBjoWqbK5K
           </p>
@@ -901,12 +1031,6 @@ window.openDonate = function() {
           <span>💬</span> Contact Developer
         </a>
       </div>
-
-      <p style="
-        margin-top: 20px;
-        font-size: 14px;
-        opacity: 0.7;
-      ">Thank you for supporting independent development! 🚀</p>
     </div>
   `;
   createWindow('Donate', donateContent, '500px', '700px');
