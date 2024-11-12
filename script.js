@@ -2,15 +2,14 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebas
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
 import { getFirestore, collection, getDocs, addDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 window.isScoreSaved = false;
-
 const firebaseConfig = {
-    apiKey: process.env.apiKey,
-    authDomain: process.env.authDomain,
-    projectId: process.env.projectId,
-    storageBucket: process.env.storageBucket,
-    messagingSenderId: process.env.messagingSenderId,
-    appId: process.env.appId,
-    measurementId: process.env.measurementId
+    apiKey: "AIzaSyCKNXXV3r4jV-UewRFFNIRRuGn2_LhN30I",
+    authDomain: "glorpybird.firebaseapp.com",
+    projectId: "glorpybird",
+    storageBucket: "glorpybird.firebasestorage.app",
+    messagingSenderId: "70125995385",
+    appId: "1:70125995385:web:0c09ce3b8d7c4cc6fd1ba8",
+    measurementId: "G-5T3FZ7DLNP"
   };
 
   
