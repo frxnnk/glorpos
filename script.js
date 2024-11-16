@@ -391,3 +391,236 @@ window.powerOff = function() {
     document.body.style.opacity = '0';
   }, 1000);
 };
+
+window.openDonate = function() {
+  const donateContent = `
+    <div class="donate-content" style="
+      padding: 30px;
+      height: calc(100% - 60px);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    ">
+      <img src="https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/assets/glorphead.png" alt="GlorpCat Logo" style="
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+        box-shadow: 0 0 20px rgba(255,255,255,0.3);
+        animation: pulse 2s infinite;
+      ">
+      
+      <h2 style="
+        font-size: 28px;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      ">Support GlorpCat OS</h2>
+      
+      <p style="
+        font-size: 18px;
+        opacity: 0.9;
+        max-width: 80%;
+        line-height: 1.5;
+      ">Your donations help keep GlorpCat OS free and open for everyone!</p>
+      
+      <div style="
+        background: rgba(255,255,255,0.1);
+        padding: 20px;
+        border-radius: 12px;
+        backdrop-filter: blur(5px);
+        width: 80%;
+        margin: 20px 0;
+      ">
+        <h3 style="margin: 0 0 15px 0;">Donation Address</h3>
+        <div style="
+          background: rgba(0,0,0,0.2);
+          padding: 15px;
+          border-radius: 8px;
+          font-family: monospace;
+          font-size: 14px;
+          word-break: break-all;
+        ">
+          <p style="margin: 0;">
+            4g49ZPzQHVeQNzxnuBnTyH74iwqVvVzRvqYBjoWqbK5K
+          </p>
+        </div>
+      </div>
+
+      <div style="
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+      ">
+        <a href="https://t.me/frxnco" target="_blank" style="
+          text-decoration: none;
+          color: white;
+          background: rgba(255,255,255,0.2);
+          padding: 10px 20px;
+          border-radius: 25px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          transition: all 0.3s;
+        ">
+          <span>💬</span> Contact Developer
+        </a>
+      </div>
+    </div>
+  `;
+  createWindow('Donate', donateContent, '500px', '700px');
+};
+
+window.openMusic = function() {
+  const musicContent = `
+    <div style="padding: 20px; height: calc(100% - 40px); display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(45deg, #1DB954, #191414);">
+      <h2 style="color: white; margin-bottom: 20px;">GlorpCat Music</h2>
+      <iframe 
+        style="border-radius:12px" 
+        src="https://open.spotify.com/embed/playlist/37i9dQZF1DX5trt9i14X7j?utm_source=generator" 
+        width="100%" 
+        height="352" 
+        frameBorder="0" 
+        allowfullscreen="" 
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+        loading="lazy">
+      </iframe>
+      <div style="margin-top: 20px; color: white; text-align: center;">
+        <p>🎵 Powered by Spotify</p>
+        <p>Listen to the best glorping tunes!</p>
+      </div>
+    </div>
+  `;
+  createWindow('Music Player', musicContent, '400px', '600px');
+};
+
+window.openSettings = function() {
+  const settingsContent = `
+    <div class="settings-window">
+      <div class="settings-section">
+        <h2>Theme Settings</h2>
+        <div class="color-themes">
+          <div class="theme-option ${getCurrentTheme() === 'default' ? 'active' : ''}" onclick="setTheme('default')">
+            <div class="theme-preview" style="background: linear-gradient(45deg, #ff69b4, #ffbd44)"></div>
+            <span>Default</span>
+          </div>
+          <div class="theme-option ${getCurrentTheme() === 'dark' ? 'active' : ''}" onclick="setTheme('dark')">
+            <div class="theme-preview" style="background: linear-gradient(45deg, #2c3e50, #3498db)"></div>
+            <span>Dark</span>
+          </div>
+          <div class="theme-option ${getCurrentTheme() === 'forest' ? 'active' : ''}" onclick="setTheme('forest')">
+            <div class="theme-preview" style="background: linear-gradient(45deg, #27ae60, #2ecc71)"></div>
+            <span>Forest</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h2>Display Settings</h2>
+        <div class="settings-control">
+          <label for="window-opacity">Window Opacity</label>
+          <input type="range" id="window-opacity" class="settings-slider" min="0.5" max="1" step="0.1" value="${getWindowOpacity()}" 
+            onchange="setWindowOpacity(this.value)">
+        </div>
+        <div class="settings-control">
+          <label>
+            <input type="checkbox" onchange="toggleBlur(this.checked)" ${isBlurEnabled() ? 'checked' : ''}>
+            Enable Blur Effects
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h2>Sound Settings</h2>
+        <div class="settings-control">
+          <label>
+            <input type="checkbox" onchange="toggleSystemSounds(this.checked)" ${areSystemSoundsEnabled() ? 'checked' : ''}>
+            Enable System Sounds
+          </label>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  const settingsWindow = createWindow('Settings', settingsContent, '400px', '600px');
+  return settingsWindow;
+};
+
+// Add these helper functions
+function getCurrentTheme() {
+  // Get current theme from localStorage or default to 'forest'
+  return localStorage.getItem('theme') || 'forest';
+}
+
+function getWindowOpacity() {
+  return localStorage.getItem('windowOpacity') || 0.9;
+}
+
+function setWindowOpacity(value) {
+  localStorage.setItem('windowOpacity', value);
+  document.querySelectorAll('.window').forEach(window => {
+    window.style.opacity = value;
+  });
+}
+
+function isBlurEnabled() {
+  return localStorage.getItem('blurEffects') !== 'false';
+}
+
+function toggleBlur(enabled) {
+  localStorage.setItem('blurEffects', enabled);
+  document.documentElement.style.setProperty('--blur-amount', enabled ? '10px' : '0px');
+}
+
+function areSystemSoundsEnabled() {
+  return localStorage.getItem('systemSounds') !== 'false';
+}
+
+function toggleSystemSounds(enabled) {
+  localStorage.setItem('systemSounds', enabled);
+}
+
+const themes = {
+  default: {
+    primary: '#ff69b4',
+    primaryRGB: '255, 105, 180',
+    secondary: '#ffbd44', 
+    secondaryRGB: '255, 189, 68'
+  },
+  dark: {
+    primary: '#2c3e50',
+    primaryRGB: '44, 62, 80',
+    secondary: '#3498db',
+    secondaryRGB: '52, 152, 219'
+  },
+  forest: {
+    primary: '#27ae60',
+    primaryRGB: '39, 174, 96',
+    secondary: '#2ecc71',
+    secondaryRGB: '46, 204, 113'
+  }
+};
+// Update setTheme to save the selection
+window.setTheme = function(theme) {
+  localStorage.setItem('theme', theme);
+  const root = document.documentElement;
+  root.style.setProperty('--primary', themes[theme].primary);
+  root.style.setProperty('--primary-rgb', themes[theme].primaryRGB);
+  root.style.setProperty('--secondary', themes[theme].secondary);
+  root.style.setProperty('--secondary-rgb', themes[theme].secondaryRGB);
+
+  // Update SVG icon colors
+  const desktopIcons = document.querySelectorAll('.desktop-icon .icon-img rect');
+  desktopIcons.forEach(icon => {
+    icon.setAttribute('fill', themes[theme].primary);
+  });
+  
+  // Update active state in settings window if open
+  document.querySelectorAll('.theme-option').forEach(option => {
+    option.classList.toggle('active', option.textContent.toLowerCase().includes(theme));
+  });
+}
