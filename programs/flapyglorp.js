@@ -5,7 +5,6 @@ import { getFirestore, collection, getDocs, addDoc, query, orderBy, limit } from
 import firebaseConfig from '../firebaseConfig.js';
 window.isScoreSaved = false;
 
-  
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
