@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   window.openHome = function() {
-    createWindow('Web', '<iframe src="https://www.glorpcat.lol" style="width: 100%; height: calc(100% - 40px); border: none;"></iframe>');
+    createWindow('Web', '<iframe src="https://linktr.ee/glorpcat" style="width: 100%; height: calc(100% - 40px); border: none;"></iframe>');
   };
 
   window.openGlorpWallet = function() {
