@@ -1,0 +1,17 @@
+{
+  "capturedAt": "2026-09-07T23:07:34.804Z",
+  "source": "https://api.howrare.is/v0.1/collections/glorp/",
+  "sha256": "f3ff661716a221a91b882b8fd9c62db951d8c509f818c5e9c5a5d61c6c2bfb60",
+  "count": 1337,
+  "primarySources": [
+    "https://linktr.ee/glorpcat",
+    "https://t.me/GlorpCat",
+    "https://launchmynft.io/collections/YNzVmdaJ5FpzzN7RXi8uDHqjH2dNnfyuAfu9dihaaSc/eiyuobb65kzE4UxS3bIu"
+  ],
+  "limitations": [
+    "Original glorpcat.lol timed out",
+    "Magic Eden API returned HTTP 429",
+    "NFT image URLs retained at source; image binaries are not archived",
+    "No verified founder, artist, launch date or roadmap from available primary sources"
+  ]
+}

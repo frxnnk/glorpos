@@ -1,0 +1,173 @@
+<html>
+  <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GlorpOS</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/assets/glorphead.png">
+</head>
+<body>
+  <div class="background-wrapper"></div>
+  <div class="boot-screen">
+    <img src="https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/assets/glorphead.png" alt="GlorpCat OS Logo" class="boot-logo">
+    <div id="boot-messages"></div>
+    <div class="boot-progress">
+      <div class="boot-progress-bar"></div>
+    </div>
+  </div>
+  <div class="desktop">
+    <div class="desktop-icon" onclick="openGlorpWallet()">
+      <svg class="icon-img" viewBox="0 0 48 48">
+        <rect width="48" height="48" rx="8" fill="var(--primary)"/>
+        <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">💰</text>
+      </svg>
+      <div>Wallet</div>
+    </div>
+
+    <div class="desktop-icon" onclick="openChart()">
+      <svg class="icon-img" viewBox="0 0 48 48">
+        <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+        <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">📈</text>
+      </svg>
+      <div>Chart</div>
+    </div>
+
+    <div class="desktop-icon" onclick="openGenerator()">
+      <svg class="icon-img" viewBox="0 0 48 48">
+        <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+        <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">✨</text>
+      </svg>
+      <div>Glorp Maker</div>
+    </div>
+
+    <div class="desktop-icon" onclick="openHome()">
+      <svg class="icon-img" viewBox="0 0 48 48">
+        <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+        <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">🌐</text>
+      </svg>
+      <div>Links</div>
+    </div>
+
+    <!-- <div class="desktop-icon" onclick="initChat()">
+      <svg class="icon-img" viewBox="0 0 48 48">
+        <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+        <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">💭</text>
+      </svg>
+      <div>Chat</div>
+    </div> -->
+
+    <div class="desktop-icon" onclick="openGame()">
+      <svg class="icon-img" viewBox="0 0 48 48">
+        <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+        <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">🎮</text>
+      </svg>
+      <div>Flappy Glorp</div>
+    </div>
+
+    <div class="desktop-icon" onclick="openMagicEden()">
+      <svg class="icon-img" viewBox="0 0 48 48">
+        <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+        <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">🎨</text>
+      </svg>
+      <div>Magic Eden</div>
+    </div>
+
+    <div class="desktop-icon" onclick="openTerminal()">
+      <svg class="icon-img" viewBox="0 0 48 48">
+        <rect width="48" height="48" rx="8" fill="#ff69b4"/>
+        <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">💻</text>
+      </svg>
+      <div>Terminal</div>
+    </div>
+
+    <div class="desktop-icon" onclick="openMusic()">
+      <svg class="icon-img" viewBox="0 0 48 48">
+        <rect width="48" height="48" rx="8" fill="var(--primary)"/>
+        <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">🎵</text>
+      </svg>
+      <div>Music</div>
+    </div>
+
+    <div class="desktop-icon" onclick="openDonate()">
+      <svg class="icon-img" viewBox="0 0 48 48">
+        <rect width="48" height="48" rx="8" fill="var(--primary)"/>
+        <text x="24" y="32" fill="white" text-anchor="middle" font-size="24">💝</text>
+      </svg>
+      <div>Donate</div>
+    </div>
+
+  </div>
+
+  <div class="start-menu">
+    <div class="start-menu-item" onclick="openGlorpWallet()">
+      <span>💰</span>
+      <span>Wallet</span>
+    </div>
+    <div class="start-menu-item" onclick="openChart()">
+      <span>📈</span>
+      <span>Chart</span>
+    </div>
+    <div class="start-menu-item" onclick="openGenerator()">
+      <span>✨</span>
+      <span>Randglorp</span>
+    </div>
+    <div class="start-menu-item" onclick="openGame()">
+      <span>🎮</span>
+      <span>Flappy Glorp</span>
+    </div>
+    <div class="start-menu-item" onclick="openMagicEden()">
+      <span>🎨</span>
+      <span>Magic Eden</span>
+    </div>
+    <div class="start-menu-item" onclick="openTerminal()">
+      <span>💻</span>
+      <span>Terminal</span>
+    </div>
+    <div class="start-menu-item" onclick="openMusic()">
+      <span>🎵</span>
+      <span>Music</span>
+    </div>
+    <div class="start-menu-item" onclick="openSettings()">
+      <span>⚙️</span>
+      <span>Settings</span>
+    </div>
+    <div class="start-menu-item" onclick="openHelp()">
+      <span>❓</span>
+      <span>Help</span>
+    </div>
+    <div class="start-menu-item" onclick="lockSystem()">
+      <span>🔒</span>
+      <span>Lock</span>
+    </div>
+    <div class="start-menu-item" onclick="powerOff()">
+      <span>🔌</span>
+      <span>Power</span>
+    </div>
+  </div>
+
+  <div class="taskbar">
+    <div class="start-button" onclick="toggleStartMenu()">
+      <img src="https://raw.githubusercontent.com/frxnnk/glorpos/refs/heads/main/assets/glorphead.png" alt="GlorpCat logo" width="24" height="24">
+      <span>Start</span>
+    </div>
+
+    <div class="taskbar-open-programs">
+      <!-- Open program icons will be dynamically added here -->
+    </div>
+    
+    <div class="taskbar-items"></div>
+    <div class="system-tray">
+      <span class="system-icon">📶</span>
+      <span id="clock">00:00</span>
+    </div>
+  </div>
+
+  <script type="module" src="script.js"></script>
+  <script type="module" src="programs/chat.js"></script>
+  <script type="module" src="programs/donate.js"></script>
+  <script type="module" src="programs/flapyglorp.js"></script>
+  <script type="module" src="programs/help.js"></script>
+  <script type="module" src="programs/music.js"></script>
+  <script type="module" src="programs/settings.js"></script>
+  <script type="module" src="programs/terminal.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+legacy/
+docs/
+output/
+.playwright-cli/

@@ -1,0 +1,40 @@
+.space-fleet {
+  position:absolute; inset:0; overflow:hidden; pointer-events:none;
+  z-index:0; contain:layout paint; user-select:none;
+}
+.boot-center { position:relative; z-index:1; }
+.spacecraft {
+  position:absolute; left:0; top:var(--lane); width:var(--ship-size);
+  transform:translate3d(clamp(8px,var(--rest),calc(100vw - var(--ship-size))),0,0); opacity:.86;
+  animation:fleet-crossing var(--duration) linear var(--delay) infinite;
+  will-change:transform;
+}
+.spacecraft.reverse { animation-direction:reverse; }
+.spacecraft:nth-child(4) { opacity:.56; }
+.spacecraft:nth-child(5) { opacity:.4; }
+.spacecraft-shell { animation:fleet-hover 7s ease-in-out var(--bob-delay) infinite; }
+.spacecraft svg { display:block; width:100%; height:auto; overflow:visible; filter:drop-shadow(0 5px 9px #03171999); }
+.ship-exhaust { transform-origin:100px 105px; animation:fleet-thrust 3s ease-in-out var(--bob-delay) infinite; }
+.flight-paused .spacecraft,.flight-paused .spacecraft-shell,.flight-paused .ship-exhaust { animation-play-state:paused; }
+@keyframes fleet-crossing {
+  0% { transform:translate3d(-230px,18px,0); }
+  25% { transform:translate3d(20vw,-18px,0); }
+  50% { transform:translate3d(50vw,10px,0); }
+  75% { transform:translate3d(80vw,-12px,0); }
+  100% { transform:translate3d(calc(100vw + 230px),18px,0); }
+}
+@keyframes fleet-hover {
+  0%,100% { transform:translateY(0) rotate(-4deg); }
+  50% { transform:translateY(-10px) rotate(5deg); }
+}
+@keyframes fleet-thrust { 50% { opacity:.5; transform:scaleY(.8); } }
+.compact .spacecraft { width:calc(var(--ship-size) * .72); }
+.compact .spacecraft:nth-child(n+4) { display:none; }
+.compact .spacecraft:first-child { top:9%; }
+.compact .spacecraft:nth-child(2) { top:70%; }
+.compact .spacecraft:nth-child(3) { top:83%; }
+.short-viewport .spacecraft { width:calc(var(--ship-size) * .64); }
+.short-viewport .spacecraft:nth-child(2) { top:58%; }
+.short-viewport .spacecraft:nth-child(3) { top:70%; }
+.reduce-motion .spacecraft { will-change:auto; }
+@media(prefers-reduced-motion:reduce) { .spacecraft { will-change:auto; } }
